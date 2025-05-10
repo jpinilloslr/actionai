@@ -1,0 +1,24 @@
+{
+  "correct-selected-text": {
+    "model": "gpt-4.1-mini",
+    "inputType": "selected-text",
+    "outputType": "clipboard",
+    "shortcut": "<Control><Alt>c",
+    "notify": true,
+    "instructions": "Correct this text. Reply only the corrected text. Keep the same style."
+  },
+  "translate-selected-text": {
+    "model": "gpt-4.1-mini",
+    "inputType": "selected-text",
+    "outputType": "window",
+    "shortcut": "<Super>t",
+    "instructions": "Translate this to English."
+  },
+  "translate-screen-section": {
+    "model": "gpt-4.1-mini",
+    "inputType": "screen-section",
+    "outputType": "window",
+    "shortcut": "<Super><Shift>t",
+    "instructions": "Translate this to English."
+  }
+}
