@@ -1,5 +1,5 @@
 package platform
 
-type SpeechRecorder interface {
+type VoiceRecorder interface {
 	Record() (string, error)
 }

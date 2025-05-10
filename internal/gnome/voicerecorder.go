@@ -5,14 +5,14 @@ import (
 	"os/exec"
 )
 
-type SpeechRecorder struct {
+type VoiceRecorder struct {
 }
 
-func NewSpeechRecorder() *SpeechRecorder {
-	return &SpeechRecorder{}
+func NewVoiceRecorder() *VoiceRecorder {
+	return &VoiceRecorder{}
 }
 
-func (p *SpeechRecorder) Record() (string, error) {
+func (p *VoiceRecorder) Record() (string, error) {
 	fileName := "/tmp/audio.mp3"
 
 	recCmd := exec.Command(

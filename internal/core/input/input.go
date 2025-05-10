@@ -1,7 +1,7 @@
 package input
 
 type Input struct {
-	Text           *string
-	ImageData      *string
-	SpeechFileName *string
+	Text          *string
+	ImageData     *string
+	VoiceFileName *string
 }

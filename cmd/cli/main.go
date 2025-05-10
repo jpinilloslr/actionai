@@ -38,7 +38,7 @@ func main() {
 		gnome.NewNotifier(),
 		gnome.NewClipboard(),
 		gnome.NewScreenshotter(),
-		gnome.NewSpeechRecorder(),
+		gnome.NewVoiceRecorder(),
 		gnome.NewSelTextProvider(),
 		gnome.NewShortcutCreator(),
 	)

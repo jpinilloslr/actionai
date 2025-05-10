@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"log/slog"
 
 	"github.com/jpinilloslr/actionai/internal/core/input"
@@ -26,7 +27,7 @@ func NewAiModelRunner(
 	notifier platform.Notifier,
 	clipboard platform.Clipboard,
 	screenshotter platform.Screenshotter,
-	speechRecorder platform.SpeechRecorder,
+	voiceRecorder platform.VoiceRecorder,
 	selTextProvider platform.SelTextProvider,
 	shortcutsCreator platform.ShortcutCreator,
 ) (*AiModelRunner, error) {
@@ -39,7 +40,7 @@ func NewAiModelRunner(
 		dialog,
 		clipboard,
 		screenshotter,
-		speechRecorder,
+		voiceRecorder,
 		selTextProvider,
 	)
 	outSender := output.New(dialog, clipboard)
@@ -91,20 +92,20 @@ func (r *AiModelRunner) Run(actionId string) error {
 }
 
 func (r *AiModelRunner) run(action *action, inputs []input.Input) (string, error) {
-	r.processSpeechInput(action, inputs)
+	r.processVoiceInput(inputs)
 	return r.aiModel.Run(action.Model, action.Instructions, inputs)
 }
 
-func (r *AiModelRunner) processSpeechInput(action *action, inputs []input.Input) error {
-	for _, in := range inputs {
-		if in.SpeechFileName != nil {
-			text, err := r.aiModel.SpeechToText(*in.SpeechFileName)
+func (r *AiModelRunner) processVoiceInput(inputs []input.Input) error {
+	for i := range inputs {
+		if inputs[i].VoiceFileName != nil {
+			text, err := r.aiModel.SpeechToText(*inputs[i].VoiceFileName)
 			if err != nil {
 				return err
 			}
 
-			in.Text = &text
-			in.SpeechFileName = nil
+			inputs[i].Text = &text
+			inputs[i].VoiceFileName = nil
 		}
 	}
 

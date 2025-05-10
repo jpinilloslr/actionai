@@ -10,7 +10,7 @@ type Receiver struct {
 	dialog          platform.Dialog
 	clipboard       platform.Clipboard
 	screenshotter   platform.Screenshotter
-	speechRecorder  platform.SpeechRecorder
+	voiceRecorder   platform.VoiceRecorder
 	selTextProvider platform.SelTextProvider
 }
 
@@ -18,14 +18,14 @@ func New(
 	dialog platform.Dialog,
 	clipboard platform.Clipboard,
 	screenshotter platform.Screenshotter,
-	speechRecorder platform.SpeechRecorder,
+	voiceRecorder platform.VoiceRecorder,
 	selTextProvider platform.SelTextProvider,
 ) *Receiver {
 	return &Receiver{
 		dialog:          dialog,
 		clipboard:       clipboard,
 		screenshotter:   screenshotter,
-		speechRecorder:  speechRecorder,
+		voiceRecorder:   voiceRecorder,
 		selTextProvider: selTextProvider,
 	}
 }
@@ -135,12 +135,12 @@ func (r *Receiver) getScreenSection() (*Input, error) {
 }
 
 func (r *Receiver) getVoice() (*Input, error) {
-	recordFile, err := r.speechRecorder.Record()
+	fileName, err := r.voiceRecorder.Record()
 	if err != nil {
 		return nil, err
 	}
 
 	return &Input{
-		SpeechFileName: &recordFile,
+		VoiceFileName: &fileName,
 	}, nil
 }
