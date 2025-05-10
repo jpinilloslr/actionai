@@ -30,7 +30,21 @@ func New(
 	}
 }
 
-func (r *Receiver) Receive(inType Type) (*Input, error) {
+func (r *Receiver) Receive(types []Type) ([]Input, error) {
+	result := []Input{}
+
+	for _, inType := range types {
+		in, err := r.process(inType)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, *in)
+	}
+
+	return result, nil
+}
+
+func (r *Receiver) process(inType Type) (*Input, error) {
 	switch inType {
 	case Clipboard:
 		return r.getClipboard()

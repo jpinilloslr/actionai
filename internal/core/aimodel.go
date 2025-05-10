@@ -1,8 +1,13 @@
 package core
 
+import "github.com/jpinilloslr/actionai/internal/core/input"
+
 type AiModel interface {
 	TextToSpeech(text string) error
 	SpeechToText(audioFile string) (string, error)
-	RunWithText(model string, instructions string, text string) (string, error)
-	RunWithImage(model string, instructions string, data string) (string, error)
+	Run(
+		model string,
+		instructions string,
+		inputs []input.Input,
+	) (string, error)
 }

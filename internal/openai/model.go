@@ -39,16 +39,16 @@ func (m *AIModel) init() error {
 	return nil
 }
 
-func (m *AIModel) RunWithText(
+func (m *AIModel) Run(
 	model string,
 	instructions string,
-	text string,
+	inputs []core.Input,
 ) (string, error) {
 	m.logger.Info(
-		"Running OpenAI model with text",
+		"Running OpenAI model",
 		slog.Any("model", model),
 		slog.Any("instructions", instructions),
-		slog.Any("text", text),
+		slog.Any("inputs", inputs),
 	)
 
 	client := openai.NewClient(
@@ -57,57 +57,25 @@ func (m *AIModel) RunWithText(
 
 	messages := []openai.ChatCompletionMessageParamUnion{
 		openai.SystemMessage(instructions),
-		openai.UserMessage(text),
 	}
 
-	chatCompletion, err := client.Chat.Completions.New(
-		context.TODO(),
-		openai.ChatCompletionNewParams{
-			Model:    model,
-			Messages: messages,
-		},
-	)
-
-	if err != nil {
-		return "", err
-	}
-
-	if len(chatCompletion.Choices) == 0 {
-		return "", fmt.Errorf("Empty response from model")
-	}
-
-	content := chatCompletion.Choices[0].Message.Content
-	m.logger.Info("Response from OpenAI model",
-		slog.Any("response", content))
-
-	return content, nil
-}
-
-func (m *AIModel) RunWithImage(
-	model string,
-	instructions string,
-	data string,
-) (string, error) {
-	m.logger.Info(
-		"Running OpenAI model with image",
-		slog.Any("model", model),
-		slog.Any("instructions", instructions),
-	)
-
-	client := openai.NewClient(
-		option.WithAPIKey(m.apiKey),
-	)
-
-	messages := []openai.ChatCompletionMessageParamUnion{
-		openai.SystemMessage(instructions),
-		openai.UserMessage(
-			[]openai.ChatCompletionContentPartUnionParam{
-				openai.ImageContentPart(
-					openai.ChatCompletionContentPartImageImageURLParam{
-						URL: data,
-					}),
-			},
-		),
+	for _, input := range inputs {
+		if input.Text != nil {
+			messages = append(messages, openai.UserMessage(*input.Text))
+		}
+		if input.ImageData != nil {
+			messages = append(
+				messages,
+				openai.UserMessage(
+					[]openai.ChatCompletionContentPartUnionParam{
+						openai.ImageContentPart(
+							openai.ChatCompletionContentPartImageImageURLParam{
+								URL: *input.ImageData,
+							}),
+					},
+				),
+			)
+		}
 	}
 
 	chatCompletion, err := client.Chat.Completions.New(

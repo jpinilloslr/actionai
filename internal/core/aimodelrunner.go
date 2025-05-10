@@ -1,7 +1,6 @@
 package core
 
 import (
-	"fmt"
 	"log/slog"
 
 	"github.com/jpinilloslr/actionai/internal/core/input"
@@ -71,12 +70,12 @@ func (r *AiModelRunner) Run(actionId string) error {
 		return err
 	}
 
-	input, err := r.inReceiver.Receive(action.Inputs[0])
+	inputs, err := r.inReceiver.Receive(action.Inputs)
 	if err != nil {
 		return err
 	}
 
-	resp, err := r.run(action, input)
+	resp, err := r.run(action, inputs)
 	if err != nil {
 		return err
 	}
@@ -91,26 +90,23 @@ func (r *AiModelRunner) Run(actionId string) error {
 	return r.outSender.Send(action.Output, resp)
 }
 
-func (r *AiModelRunner) run(action *action, input *input.Input) (string, error) {
-	if input.Text != nil {
-		return r.aiModel.RunWithText(action.Model, action.Instructions, *input.Text)
-	}
+func (r *AiModelRunner) run(action *action, inputs []input.Input) (string, error) {
+	r.processSpeechInput(action, inputs)
+	return r.aiModel.Run(action.Model, action.Instructions, inputs)
+}
 
-	if input.ImageData != nil {
-		return r.aiModel.RunWithImage(
-			action.Model,
-			action.Instructions,
-			*input.ImageData,
-		)
-	}
+func (r *AiModelRunner) processSpeechInput(action *action, inputs []input.Input) error {
+	for _, in := range inputs {
+		if in.SpeechFileName != nil {
+			text, err := r.aiModel.SpeechToText(*in.SpeechFileName)
+			if err != nil {
+				return err
+			}
 
-	if input.SpeechFileName != nil {
-		text, err := r.aiModel.SpeechToText(*input.SpeechFileName)
-		if err != nil {
-			return "", err
+			in.Text = &text
+			in.SpeechFileName = nil
 		}
-		return r.aiModel.RunWithText(action.Model, action.Instructions, text)
 	}
 
-	return "", fmt.Errorf("unsupported input")
+	return nil
 }
