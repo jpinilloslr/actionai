@@ -13,7 +13,7 @@ type AiModelRunner struct {
 	aiModel    AiModel
 	logger     *slog.Logger
 	installer  *installer
-	cmdRepo    *commandRepo
+	actionRepo *actionRepo
 	inReceiver *input.Receiver
 	outSender  *output.Sender
 	notifier   platform.Notifier
@@ -31,7 +31,7 @@ func NewAiModelRunner(
 	selTextProvider platform.SelTextProvider,
 	shortcutsCreator platform.ShortcutCreator,
 ) (*AiModelRunner, error) {
-	cmdRepo, err := newCommandRepo(logger, workDir.CommandsFile())
+	cmdRepo, err := newActionRepo(logger, workDir.ActionsFile())
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func NewAiModelRunner(
 	return &AiModelRunner{
 		logger:     logger,
 		aiModel:    aiModel,
-		cmdRepo:    cmdRepo,
+		actionRepo: cmdRepo,
 		notifier:   notifier,
 		outSender:  outSender,
 		installer:  installer,
@@ -65,39 +65,43 @@ func (r *AiModelRunner) InstallShortcuts() error {
 	return nil
 }
 
-func (r *AiModelRunner) Run(command string) error {
-	cmd, err := r.cmdRepo.GetById(command)
+func (r *AiModelRunner) Run(actionId string) error {
+	action, err := r.actionRepo.GetById(actionId)
 	if err != nil {
 		return err
 	}
 
-	input, err := r.inReceiver.Receive(cmd.InputType)
+	input, err := r.inReceiver.Receive(action.Inputs[0])
 	if err != nil {
 		return err
 	}
 
-	resp, err := r.run(cmd, input)
+	resp, err := r.run(action, input)
 	if err != nil {
 		return err
 	}
 
-	if cmd.Notify {
-		err := r.notifier.Notify("AI Shortcuts", command+" completed.")
+	if action.Notify {
+		err := r.notifier.Notify("Action AI", actionId+" completed.")
 		if err != nil {
 			return err
 		}
 	}
 
-	return r.outSender.Send(cmd.OutputType, resp)
+	return r.outSender.Send(action.Output, resp)
 }
 
-func (r *AiModelRunner) run(cmd *command, input *input.Input) (string, error) {
+func (r *AiModelRunner) run(action *action, input *input.Input) (string, error) {
 	if input.Text != nil {
-		return r.aiModel.RunWithText(cmd.Model, cmd.Instructions, *input.Text)
+		return r.aiModel.RunWithText(action.Model, action.Instructions, *input.Text)
 	}
 
 	if input.ImageData != nil {
-		return r.aiModel.RunWithImage(cmd.Model, cmd.Instructions, *input.ImageData)
+		return r.aiModel.RunWithImage(
+			action.Model,
+			action.Instructions,
+			*input.ImageData,
+		)
 	}
 
 	if input.SpeechFileName != nil {
@@ -105,7 +109,7 @@ func (r *AiModelRunner) run(cmd *command, input *input.Input) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		return r.aiModel.RunWithText(cmd.Model, cmd.Instructions, text)
+		return r.aiModel.RunWithText(action.Model, action.Instructions, text)
 	}
 
 	return "", fmt.Errorf("unsupported input")

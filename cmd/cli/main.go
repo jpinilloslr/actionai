@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	command, installShortcuts := getOptions()
+	actionId, install := getOptions()
 
 	workDir, err := core.NewWorkDir()
 	if err != nil {
@@ -48,7 +48,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if installShortcuts {
+	if install {
 		err := runner.InstallShortcuts()
 		if err != nil {
 			logger.Error("Error installing shortcuts", "error", err)
@@ -57,12 +57,12 @@ func main() {
 		return
 	}
 
-	if command == "" {
-		logger.Error("No command provided")
+	if actionId == "" {
+		logger.Error("No action provided")
 		os.Exit(1)
 	}
 
-	err = runner.Run(command)
+	err = runner.Run(actionId)
 	if err != nil {
 		logger.Error("Error running the model", "error", err)
 		os.Exit(1)
@@ -70,8 +70,9 @@ func main() {
 }
 
 func getOptions() (string, bool) {
-	command := flag.String("command", "", "Command to send to the model")
-	installShortcuts := flag.Bool("install-shortcuts", false, "Install shortcuts for the model")
+	actionId := flag.String("action", "", "Action ID to run")
+	install := flag.Bool("install", false, "Install shortcuts for actions")
 	flag.Parse()
-	return *command, *installShortcuts
+
+	return *actionId, *install
 }

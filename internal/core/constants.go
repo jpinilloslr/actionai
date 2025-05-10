@@ -1,4 +1,4 @@
 package core
 
-const commandsFile = "commands.json"
+const actionsFile = "actions.json"
 const logsFile = "logs.json"

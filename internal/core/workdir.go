@@ -20,8 +20,8 @@ func NewWorkDir() (*WorkDir, error) {
 	return &w, nil
 }
 
-func (w *WorkDir) CommandsFile() string {
-	return filepath.Join(w.dir, commandsFile)
+func (w *WorkDir) ActionsFile() string {
+	return filepath.Join(w.dir, actionsFile)
 }
 
 func (w *WorkDir) LogsFile() string {
@@ -67,7 +67,7 @@ func (w *WorkDir) init() error {
 }
 
 func (w *WorkDir) isWorkDir(dir string) bool {
-	testFile := filepath.Join(dir, commandsFile)
+	testFile := filepath.Join(dir, actionsFile)
 	if _, err := os.Stat(testFile); err != nil {
 		return false
 	}

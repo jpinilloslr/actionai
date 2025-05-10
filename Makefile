@@ -7,7 +7,7 @@ all: build
 
 build:
 	go build -o bin/$(BINARY) $(CMD_PATH)
-	cp ./commands.json ./bin/
+	cp ./actions.json ./bin/
 
 run:
 	go run $(CMD_PATH)

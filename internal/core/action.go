@@ -5,10 +5,10 @@ import (
 	"github.com/jpinilloslr/actionai/internal/core/output"
 )
 
-type command struct {
+type action struct {
 	Model        string
-	InputType    input.Type
-	OutputType   output.Type
+	Inputs       []input.Type
+	Output       output.Type
 	Shortcut     string
 	Instructions string
 	Notify       bool

@@ -1,23 +1,23 @@
 {
   "correct-selected-text": {
     "model": "gpt-4.1-mini",
-    "inputType": "selected-text",
-    "outputType": "clipboard",
+    "inputs": ["selected-text"],
+    "output": "clipboard",
     "shortcut": "<Control><Alt>c",
     "notify": true,
     "instructions": "Correct this text. Reply only the corrected text. Keep the same style."
   },
   "translate-selected-text": {
     "model": "gpt-4.1-mini",
-    "inputType": "selected-text",
-    "outputType": "window",
+    "inputs": ["selected-text"],
+    "output": "window",
     "shortcut": "<Super>t",
     "instructions": "Translate this to English."
   },
   "translate-screen-section": {
     "model": "gpt-4.1-mini",
-    "inputType": "screen-section",
-    "outputType": "window",
+    "inputs": ["screen-section"],
+    "output": "window",
     "shortcut": "<Super><Shift>t",
     "instructions": "Translate this to English."
   }
