@@ -20,5 +20,12 @@
     "output": "window",
     "shortcut": "<Super><Shift>t",
     "instructions": "Translate this to English."
+  },
+  "ask-screen-with-voice": {
+    "model": "gpt-4.1-mini",
+    "inputs": ["screen-section", "voice"],
+    "output": "window",
+    "shortcut": "<Super><Shift>a",
+    "instructions": ""
   }
 }
