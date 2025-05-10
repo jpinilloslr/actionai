@@ -16,7 +16,7 @@ func (d *Dialog) Prompt() (string, error) {
 	cmd := exec.Command("zenity",
 		"--text-info",
 		"--editable",
-		"--title=AI Shortcuts",
+		"--title=Action AI",
 		"--width=500",
 		"--height=500",
 	)
@@ -31,7 +31,7 @@ func (d *Dialog) Prompt() (string, error) {
 func (d *Dialog) Show(text string) error {
 	cmd := exec.Command("zenity",
 		"--text-info",
-		"--title=AI Shortcuts",
+		"--title=Action AI",
 		"--width=500",
 		"--height=500",
 	)
