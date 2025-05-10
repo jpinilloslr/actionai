@@ -27,18 +27,10 @@ func (m *AIModel) init() error {
 	return fmt.Errorf("not implemented yet")
 }
 
-func (m *AIModel) RunWithText(
+func (m *AIModel) Run(
 	model string,
 	instructions string,
-	text string,
-) (string, error) {
-	return "", fmt.Errorf("not implemented yet")
-}
-
-func (m *AIModel) RunWithImage(
-	model string,
-	instructions string,
-	data string,
+	inputs []core.Input,
 ) (string, error) {
 	return "", fmt.Errorf("not implemented yet")
 }
