@@ -27,5 +27,12 @@
     "output": "window",
     "shortcut": "<Super><Shift>a",
     "instructions": ""
+  },
+  "ask-screen-with-text": {
+    "model": "gpt-4.1-mini",
+    "inputs": ["screen-section", "window"],
+    "output": "window",
+    "shortcut": "<Super><Control>a",
+    "instructions": ""
   }
 }
