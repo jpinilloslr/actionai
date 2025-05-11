@@ -8,8 +8,8 @@ import (
 	"github.com/jpinilloslr/actionai/internal/core/platform"
 )
 
-type AiModelRunner struct {
-	aiModel    AiModel
+type AIModelRunner struct {
+	aiModel    AIModel
 	logger     *slog.Logger
 	installer  *installer
 	actionRepo *actionRepo
@@ -18,10 +18,10 @@ type AiModelRunner struct {
 	notifier   platform.Notifier
 }
 
-func NewAiModelRunner(
+func NewAIModelRunner(
 	logger *slog.Logger,
 	workDir *WorkDir,
-	aiModel AiModel,
+	aiModel AIModel,
 	dialog platform.Dialog,
 	notifier platform.Notifier,
 	clipboard platform.Clipboard,
@@ -29,7 +29,7 @@ func NewAiModelRunner(
 	voiceRecorder platform.VoiceRecorder,
 	selTextProvider platform.SelTextProvider,
 	shortcutsCreator platform.ShortcutCreator,
-) (*AiModelRunner, error) {
+) (*AIModelRunner, error) {
 	cmdRepo, err := newActionRepo(logger, workDir.ActionsFile())
 	if err != nil {
 		return nil, err
@@ -45,7 +45,7 @@ func NewAiModelRunner(
 	outSender := output.New(dialog, clipboard)
 	installer := newInstaller(logger, cmdRepo, shortcutsCreator)
 
-	return &AiModelRunner{
+	return &AIModelRunner{
 		logger:     logger,
 		aiModel:    aiModel,
 		actionRepo: cmdRepo,
@@ -56,7 +56,7 @@ func NewAiModelRunner(
 	}, nil
 }
 
-func (r *AiModelRunner) InstallShortcuts() error {
+func (r *AIModelRunner) InstallShortcuts() error {
 	if err := r.installer.Install(); err != nil {
 		return err
 	}
@@ -64,7 +64,7 @@ func (r *AiModelRunner) InstallShortcuts() error {
 	return nil
 }
 
-func (r *AiModelRunner) Run(actionId string) error {
+func (r *AIModelRunner) Run(actionId string) error {
 	action, err := r.actionRepo.GetById(actionId)
 	if err != nil {
 		return err
@@ -90,12 +90,12 @@ func (r *AiModelRunner) Run(actionId string) error {
 	return r.outSender.Send(action.Output, resp)
 }
 
-func (r *AiModelRunner) run(action *action, inputs []input.Input) (string, error) {
+func (r *AIModelRunner) run(action *action, inputs []input.Input) (string, error) {
 	r.processVoiceInput(inputs)
 	return r.aiModel.Run(action.Model, action.Instructions, inputs)
 }
 
-func (r *AiModelRunner) processVoiceInput(inputs []input.Input) error {
+func (r *AIModelRunner) processVoiceInput(inputs []input.Input) error {
 	for i := range inputs {
 		if inputs[i].VoiceFileName != nil {
 			text, err := r.aiModel.SpeechToText(*inputs[i].VoiceFileName)

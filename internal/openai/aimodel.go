@@ -11,13 +11,13 @@ import (
 	"github.com/openai/openai-go/option"
 )
 
-type AiModel struct {
+type AIModel struct {
 	apiKey string
 	logger *slog.Logger
 }
 
-func New(logger *slog.Logger) (core.AiModel, error) {
-	m := AiModel{
+func NewAIModel(logger *slog.Logger) (core.AIModel, error) {
+	m := AIModel{
 		logger: logger,
 	}
 
@@ -28,7 +28,7 @@ func New(logger *slog.Logger) (core.AiModel, error) {
 	return &m, nil
 }
 
-func (m *AiModel) init() error {
+func (m *AIModel) init() error {
 	m.logger.Info("Initializing OpenAI model")
 	key, ok := os.LookupEnv("OPENAI_API_KEY")
 	if !ok {
@@ -39,7 +39,7 @@ func (m *AiModel) init() error {
 	return nil
 }
 
-func (m *AiModel) Run(
+func (m *AIModel) Run(
 	model string,
 	instructions string,
 	inputs []core.Input,
@@ -101,7 +101,7 @@ func (m *AiModel) Run(
 	return content, nil
 }
 
-func (m *AiModel) SpeechToText(audioFile string) (string, error) {
+func (m *AIModel) SpeechToText(audioFile string) (string, error) {
 	client := openai.NewClient()
 	ctx := context.Background()
 
@@ -121,6 +121,6 @@ func (m *AiModel) SpeechToText(audioFile string) (string, error) {
 	return transcription.Text, nil
 }
 
-func (m *AiModel) TextToSpeech(text string) error {
+func (m *AIModel) TextToSpeech(text string) error {
 	return fmt.Errorf("not implemented")
 }

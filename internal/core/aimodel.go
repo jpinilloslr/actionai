@@ -2,7 +2,7 @@ package core
 
 import "github.com/jpinilloslr/actionai/internal/core/input"
 
-type AiModel interface {
+type AIModel interface {
 	TextToSpeech(text string) error
 	SpeechToText(audioFile string) (string, error)
 	Run(

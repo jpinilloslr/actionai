@@ -24,13 +24,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	model, err := openai.New(logger)
+	model, err := openai.NewAIModel(logger)
 	if err != nil {
 		logger.Error("Error initializing model", "error", err)
 		os.Exit(1)
 	}
 
-	runner, err := core.NewAiModelRunner(
+	runner, err := core.NewAIModelRunner(
 		logger,
 		workDir,
 		model,

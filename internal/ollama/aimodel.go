@@ -7,12 +7,12 @@ import (
 	"github.com/jpinilloslr/actionai/internal/core"
 )
 
-type AiModel struct {
+type AIModel struct {
 	logger *slog.Logger
 }
 
-func New(logger *slog.Logger) (core.AiModel, error) {
-	m := AiModel{
+func NewAIModel(logger *slog.Logger) (core.AIModel, error) {
+	m := AIModel{
 		logger: logger,
 	}
 
@@ -23,11 +23,11 @@ func New(logger *slog.Logger) (core.AiModel, error) {
 	return &m, nil
 }
 
-func (m *AiModel) init() error {
+func (m *AIModel) init() error {
 	return fmt.Errorf("not implemented yet")
 }
 
-func (m *AiModel) Run(
+func (m *AIModel) Run(
 	model string,
 	instructions string,
 	inputs []core.Input,
@@ -35,10 +35,10 @@ func (m *AiModel) Run(
 	return "", fmt.Errorf("not implemented yet")
 }
 
-func (m *AiModel) SpeechToText(audioFile string) (string, error) {
+func (m *AIModel) SpeechToText(audioFile string) (string, error) {
 	return "", fmt.Errorf("not implemented yet")
 }
 
-func (m *AiModel) TextToSpeech(text string) error {
+func (m *AIModel) TextToSpeech(text string) error {
 	return fmt.Errorf("not implemented yet")
 }
