@@ -56,14 +56,14 @@ func (w *WorkDir) init() error {
 		return err
 	}
 
-	dir = filepath.Join(dir, "actionais")
+	dir = filepath.Join(dir, "actionai")
 
 	if w.isWorkDir(dir) {
 		w.setDir(dir)
 		return nil
 	}
 
-	return fmt.Errorf("Could not resolve directory.")
+	return fmt.Errorf("could not resolve directory")
 }
 
 func (w *WorkDir) isWorkDir(dir string) bool {

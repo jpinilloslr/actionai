@@ -39,7 +39,7 @@ func (s *ShortcutCreator) Create(id, command, binding string) error {
 		"custom-keybindings",
 		updated,
 	).Run(); err != nil {
-		return fmt.Errorf("set list: %w", err)
+		return err
 	}
 
 	schema := fmt.Sprintf(
@@ -54,7 +54,7 @@ func (s *ShortcutCreator) Create(id, command, binding string) error {
 		if err := exec.Command("gsettings",
 			"set", schema, key, val,
 		).Run(); err != nil {
-			return fmt.Errorf("set %s: %w", key, err)
+			return err
 		}
 	}
 	return nil

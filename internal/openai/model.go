@@ -11,13 +11,13 @@ import (
 	"github.com/openai/openai-go/option"
 )
 
-type AIModel struct {
+type AiModel struct {
 	apiKey string
 	logger *slog.Logger
 }
 
 func New(logger *slog.Logger) (core.AiModel, error) {
-	m := AIModel{
+	m := AiModel{
 		logger: logger,
 	}
 
@@ -28,7 +28,7 @@ func New(logger *slog.Logger) (core.AiModel, error) {
 	return &m, nil
 }
 
-func (m *AIModel) init() error {
+func (m *AiModel) init() error {
 	m.logger.Info("Initializing OpenAI model")
 	key, ok := os.LookupEnv("OPENAI_API_KEY")
 	if !ok {
@@ -39,7 +39,7 @@ func (m *AIModel) init() error {
 	return nil
 }
 
-func (m *AIModel) Run(
+func (m *AiModel) Run(
 	model string,
 	instructions string,
 	inputs []core.Input,
@@ -91,7 +91,7 @@ func (m *AIModel) Run(
 	}
 
 	if len(chatCompletion.Choices) == 0 {
-		return "", fmt.Errorf("Empty response from model")
+		return "", fmt.Errorf("empty response from model")
 	}
 
 	content := chatCompletion.Choices[0].Message.Content
@@ -101,7 +101,7 @@ func (m *AIModel) Run(
 	return content, nil
 }
 
-func (m *AIModel) SpeechToText(audioFile string) (string, error) {
+func (m *AiModel) SpeechToText(audioFile string) (string, error) {
 	client := openai.NewClient()
 	ctx := context.Background()
 
@@ -121,6 +121,6 @@ func (m *AIModel) SpeechToText(audioFile string) (string, error) {
 	return transcription.Text, nil
 }
 
-func (m *AIModel) TextToSpeech(text string) error {
-	return fmt.Errorf("TextToSpeech not implemented")
+func (m *AiModel) TextToSpeech(text string) error {
+	return fmt.Errorf("not implemented")
 }

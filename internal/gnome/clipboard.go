@@ -19,7 +19,7 @@ func (c *Clipboard) SetText(text string) error {
 	cmd.Stdin = strings.NewReader(text)
 
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("failed to set clipboard: %w", err)
+		return err
 	}
 	return nil
 }
