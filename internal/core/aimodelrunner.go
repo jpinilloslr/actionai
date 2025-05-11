@@ -9,19 +9,21 @@ import (
 )
 
 type AIModelRunner struct {
-	aiModel    AIModel
-	logger     *slog.Logger
-	installer  *installer
-	actionRepo *actionRepo
-	inReceiver *input.Receiver
-	outSender  *output.Sender
-	notifier   platform.Notifier
+	aiModel     AIModel
+	voiceEngine VoiceEngine
+	logger      *slog.Logger
+	installer   *installer
+	actionRepo  *actionRepo
+	inReceiver  *input.Receiver
+	outSender   *output.Sender
+	notifier    platform.Notifier
 }
 
 func NewAIModelRunner(
 	logger *slog.Logger,
 	workDir *WorkDir,
 	aiModel AIModel,
+	voiceEngine VoiceEngine,
 	dialog platform.Dialog,
 	notifier platform.Notifier,
 	clipboard platform.Clipboard,
@@ -46,13 +48,14 @@ func NewAIModelRunner(
 	installer := newInstaller(logger, cmdRepo, shortcutsCreator)
 
 	return &AIModelRunner{
-		logger:     logger,
-		aiModel:    aiModel,
-		actionRepo: cmdRepo,
-		notifier:   notifier,
-		outSender:  outSender,
-		installer:  installer,
-		inReceiver: inReceiver,
+		logger:      logger,
+		aiModel:     aiModel,
+		actionRepo:  cmdRepo,
+		notifier:    notifier,
+		outSender:   outSender,
+		installer:   installer,
+		inReceiver:  inReceiver,
+		voiceEngine: voiceEngine,
 	}, nil
 }
 
@@ -98,7 +101,7 @@ func (r *AIModelRunner) run(action *action, inputs []input.Input) (string, error
 func (r *AIModelRunner) processVoiceInput(inputs []input.Input) error {
 	for i := range inputs {
 		if inputs[i].VoiceFileName != nil {
-			text, err := r.aiModel.SpeechToText(*inputs[i].VoiceFileName)
+			text, err := r.voiceEngine.Transcribe(*inputs[i].VoiceFileName)
 			if err != nil {
 				return err
 			}

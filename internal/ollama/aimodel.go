@@ -34,11 +34,3 @@ func (m *AIModel) Run(
 ) (string, error) {
 	return "", fmt.Errorf("not implemented yet")
 }
-
-func (m *AIModel) SpeechToText(audioFile string) (string, error) {
-	return "", fmt.Errorf("not implemented yet")
-}
-
-func (m *AIModel) TextToSpeech(text string) error {
-	return fmt.Errorf("not implemented yet")
-}

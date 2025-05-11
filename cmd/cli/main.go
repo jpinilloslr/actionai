@@ -30,10 +30,17 @@ func main() {
 		os.Exit(1)
 	}
 
+	voiceEngine, err := openai.NewVoiceEngine(logger)
+	if err != nil {
+		logger.Error("Error initializing voice engine", "error", err)
+		os.Exit(1)
+	}
+
 	runner, err := core.NewAIModelRunner(
 		logger,
 		workDir,
 		model,
+		voiceEngine,
 		gnome.NewDialog(),
 		gnome.NewNotifier(),
 		gnome.NewClipboard(),
