@@ -1,0 +1,6 @@
+{
+  "name": "Action AI",
+  "description": "Support for AI actions",
+  "uuid": "actionai@jpinillos.dev.com",
+  "shell-version": ["48"]
+}
