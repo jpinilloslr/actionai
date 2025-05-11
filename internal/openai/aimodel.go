@@ -100,27 +100,3 @@ func (m *AIModel) Run(
 
 	return content, nil
 }
-
-func (m *AIModel) SpeechToText(audioFile string) (string, error) {
-	client := openai.NewClient()
-	ctx := context.Background()
-
-	file, err := os.Open(audioFile)
-	if err != nil {
-		return "", err
-	}
-
-	transcription, err := client.Audio.Transcriptions.New(ctx, openai.AudioTranscriptionNewParams{
-		Model: openai.AudioModelWhisper1,
-		File:  file,
-	})
-	if err != nil {
-		return "", err
-	}
-
-	return transcription.Text, nil
-}
-
-func (m *AIModel) TextToSpeech(text string) error {
-	return fmt.Errorf("not implemented")
-}

@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"time"
 
+	"github.com/ebitengine/oto/v3"
 	"github.com/jpinilloslr/actionai/internal/core"
 	"github.com/openai/openai-go"
+	"github.com/openai/openai-go/option"
 )
 
 type VoiceEngine struct {
@@ -39,7 +42,9 @@ func (m *VoiceEngine) init() error {
 }
 
 func (m *VoiceEngine) Transcribe(audioFile string) (string, error) {
-	client := openai.NewClient()
+	client := openai.NewClient(
+		option.WithAPIKey(m.apiKey),
+	)
 	ctx := context.Background()
 
 	file, err := os.Open(audioFile)
@@ -59,5 +64,40 @@ func (m *VoiceEngine) Transcribe(audioFile string) (string, error) {
 }
 
 func (m *VoiceEngine) Speak(text string) error {
-	return fmt.Errorf("not implemented")
+	client := openai.NewClient(
+		option.WithAPIKey(m.apiKey),
+	)
+	ctx := context.Background()
+
+	res, err := client.Audio.Speech.New(ctx, openai.AudioSpeechNewParams{
+		Input:          text,
+		Model:          openai.SpeechModelTTS1,
+		Voice:          openai.AudioSpeechNewParamsVoiceNova,
+		ResponseFormat: openai.AudioSpeechNewParamsResponseFormatPCM,
+	})
+	defer res.Body.Close()
+
+	if err != nil {
+		return err
+	}
+
+	op := &oto.NewContextOptions{}
+	op.SampleRate = 24000
+	op.ChannelCount = 1
+	op.Format = oto.FormatSignedInt16LE
+
+	otoCtx, readyChan, err := oto.NewContext(op)
+	if err != nil {
+		return err
+	}
+
+	<-readyChan
+
+	player := otoCtx.NewPlayer(res.Body)
+	player.Play()
+	for player.IsPlaying() {
+		time.Sleep(time.Millisecond)
+	}
+
+	return player.Close()
 }
