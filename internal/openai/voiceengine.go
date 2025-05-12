@@ -63,11 +63,10 @@ func (m *VoiceEngine) Transcribe(audioFile string) (string, error) {
 	return transcription.Text, nil
 }
 
-func (m *VoiceEngine) Speak(text string) error {
+func (m *VoiceEngine) Speak(ctx context.Context, text string) error {
 	client := openai.NewClient(
 		option.WithAPIKey(m.apiKey),
 	)
-	ctx := context.Background()
 
 	res, err := client.Audio.Speech.New(ctx, openai.AudioSpeechNewParams{
 		Input:          text,
@@ -95,9 +94,20 @@ func (m *VoiceEngine) Speak(text string) error {
 
 	player := otoCtx.NewPlayer(res.Body)
 	player.Play()
-	for player.IsPlaying() {
-		time.Sleep(time.Millisecond)
-	}
 
-	return player.Close()
+	done := make(chan struct{})
+	go func() {
+		for player.IsPlaying() {
+			time.Sleep(time.Millisecond)
+		}
+		close(done)
+	}()
+
+	select {
+	case <-ctx.Done():
+		player.Close()
+		return ctx.Err()
+	case <-done:
+		return player.Close()
+	}
 }

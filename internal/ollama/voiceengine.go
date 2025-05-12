@@ -1,6 +1,7 @@
 package ollama
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 
@@ -31,6 +32,6 @@ func (m *VoiceEngine) Transcribe(audioFile string) (string, error) {
 	return "", fmt.Errorf("not implemented yet")
 }
 
-func (m *VoiceEngine) Speak(text string) error {
+func (m *VoiceEngine) Speak(ctx context.Context, text string) error {
 	return fmt.Errorf("not implemented yet")
 }

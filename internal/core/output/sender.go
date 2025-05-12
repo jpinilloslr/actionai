@@ -1,6 +1,7 @@
 package output
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/jpinilloslr/actionai/internal/core/platform"
@@ -9,13 +10,13 @@ import (
 type Sender struct {
 	dialog    platform.Dialog
 	clipboard platform.Clipboard
-	speak     func(string) error
+	speak     func(context.Context, string) error
 }
 
 func New(
 	dialog platform.Dialog,
 	clipboard platform.Clipboard,
-	speak func(string) error,
+	speak func(context.Context, string) error,
 ) *Sender {
 	return &Sender{
 		dialog:    dialog,
@@ -61,5 +62,21 @@ func (s *Sender) setWindow(value string) error {
 }
 
 func (s *Sender) setVoice(value string) error {
-	return s.speak(value)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	errCh := make(chan error, 1)
+
+	go func() {
+		errCh <- s.dialog.ShowInfo(ctx, "Speaking...")
+	}()
+
+	go func() {
+		errCh <- s.speak(ctx, value)
+	}()
+
+	err := <-errCh
+	cancel()
+	<-errCh
+	return err
 }

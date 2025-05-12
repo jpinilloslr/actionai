@@ -1,6 +1,8 @@
 package gnome
 
 import (
+	"context"
+	"fmt"
 	"os/exec"
 	"strings"
 )
@@ -37,4 +39,33 @@ func (d *Dialog) Show(text string) error {
 	)
 	cmd.Stdin = strings.NewReader(text)
 	return cmd.Run()
+}
+
+func (d *Dialog) ShowInfo(ctx context.Context, text string) error {
+	cmd := exec.Command("zenity",
+		"--info",
+		"--title=Action AI",
+		"--text", text,
+		"--ok-label=Cancel",
+	)
+	cmd.Stdin = strings.NewReader(text)
+
+	if err := cmd.Start(); err != nil {
+		return err
+	}
+
+	done := make(chan error, 1)
+
+	go func() {
+		done <- cmd.Wait()
+	}()
+
+	select {
+	case <-ctx.Done():
+		cmd.Process.Kill()
+		<-done
+		return ctx.Err()
+	case err := <-done:
+		return err
+	}
 }
