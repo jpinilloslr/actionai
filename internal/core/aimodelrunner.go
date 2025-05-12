@@ -44,7 +44,7 @@ func NewAIModelRunner(
 		voiceRecorder,
 		selTextProvider,
 	)
-	outSender := output.New(dialog, clipboard)
+	outSender := output.New(dialog, clipboard, voiceEngine.Speak)
 	installer := newInstaller(logger, cmdRepo, shortcutsMgr)
 
 	return &AIModelRunner{

@@ -9,12 +9,18 @@ import (
 type Sender struct {
 	dialog    platform.Dialog
 	clipboard platform.Clipboard
+	speak     func(string) error
 }
 
-func New(dialog platform.Dialog, clipboard platform.Clipboard) *Sender {
+func New(
+	dialog platform.Dialog,
+	clipboard platform.Clipboard,
+	speak func(string) error,
+) *Sender {
 	return &Sender{
 		dialog:    dialog,
 		clipboard: clipboard,
+		speak:     speak,
 	}
 }
 
@@ -33,6 +39,11 @@ func (s *Sender) Send(outType Type, value string) error {
 			return err
 		}
 		return nil
+	case Voice:
+		if err := s.setVoice(value); err != nil {
+			return err
+		}
+		return nil
 	default:
 		return fmt.Errorf("unsupported output type: %s", outType)
 	}
@@ -47,4 +58,8 @@ func (s *Sender) setClipboard(value string) error {
 
 func (s *Sender) setWindow(value string) error {
 	return s.dialog.Show(value)
+}
+
+func (s *Sender) setVoice(value string) error {
+	return s.speak(value)
 }
