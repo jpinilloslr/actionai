@@ -2,7 +2,6 @@ package gnome
 
 import (
 	"context"
-	"fmt"
 	"os/exec"
 	"strings"
 )
