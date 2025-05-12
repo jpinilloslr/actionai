@@ -29,7 +29,19 @@ func (w *WorkDir) LogsFile() string {
 }
 
 func (w *WorkDir) init() error {
-	dir, err := os.Getwd()
+	dir, err := os.UserConfigDir()
+	if err != nil {
+		return err
+	}
+
+	dir = filepath.Join(dir, "actionai")
+
+	if w.isWorkDir(dir) {
+		w.setDir(dir)
+		return nil
+	}
+
+	dir, err = os.Getwd()
 	if err != nil {
 		return err
 	}
@@ -51,18 +63,6 @@ func (w *WorkDir) init() error {
 		return nil
 	}
 
-	dir, err = os.UserConfigDir()
-	if err != nil {
-		return err
-	}
-
-	dir = filepath.Join(dir, "actionai")
-
-	if w.isWorkDir(dir) {
-		w.setDir(dir)
-		return nil
-	}
-
 	return fmt.Errorf("could not resolve directory")
 }
 
@@ -75,6 +75,6 @@ func (w *WorkDir) isWorkDir(dir string) bool {
 }
 
 func (w *WorkDir) setDir(dir string) {
-	fmt.Printf("Using directory %s", dir)
+	fmt.Printf("Using directory %s\n", dir)
 	w.dir = dir
 }

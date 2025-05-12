@@ -3,7 +3,7 @@
     "model": "gpt-4.1-mini",
     "inputs": ["selected-text"],
     "output": "clipboard",
-    "shortcut": "<Control><Alt>c",
+    "shortcut": "<Super>c",
     "notify": true,
     "instructions": "Correct this text. Reply only the corrected text. Keep the same style."
   },
@@ -12,7 +12,7 @@
     "inputs": ["selected-text"],
     "output": "window",
     "shortcut": "<Super>t",
-    "instructions": "Traduce this to English."
+    "instructions": "Translate this to English."
   },
   "translate-screen-section": {
     "model": "gpt-4.1-mini",
@@ -21,25 +21,18 @@
     "shortcut": "<Super><Shift>t",
     "instructions": "Translate this to English."
   },
-  "ask-screen-with-voice": {
+  "ask-screen-section-with-voice": {
     "model": "gpt-4.1-mini",
     "inputs": ["screen-section", "voice"],
     "output": "window",
     "shortcut": "<Super><Shift>a",
     "instructions": ""
   },
-  "ask-screen-with-text": {
-    "model": "gpt-4.1-mini",
-    "inputs": ["screen-section", "window"],
-    "output": "window",
-    "shortcut": "<Super><Control>a",
-    "instructions": ""
-  },
-  "speak": {
+  "voice": {
     "model": "gpt-4.1-mini",
     "inputs": ["voice"],
     "output": "voice",
-    "shortcut": "<Super><Control>v",
+    "shortcut": "<Super>v",
     "instructions": ""
   }
 }
