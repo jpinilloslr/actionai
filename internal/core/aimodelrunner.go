@@ -27,10 +27,10 @@ func NewAIModelRunner(
 	dialog platform.Dialog,
 	notifier platform.Notifier,
 	clipboard platform.Clipboard,
+	shortcutsMgr platform.ShortcutsMgr,
 	screenshotter platform.Screenshotter,
 	voiceRecorder platform.VoiceRecorder,
 	selTextProvider platform.SelTextProvider,
-	shortcutsCreator platform.ShortcutCreator,
 ) (*AIModelRunner, error) {
 	cmdRepo, err := newActionRepo(logger, workDir.ActionsFile())
 	if err != nil {
@@ -45,7 +45,7 @@ func NewAIModelRunner(
 		selTextProvider,
 	)
 	outSender := output.New(dialog, clipboard)
-	installer := newInstaller(logger, cmdRepo, shortcutsCreator)
+	installer := newInstaller(logger, cmdRepo, shortcutsMgr)
 
 	return &AIModelRunner{
 		logger:      logger,

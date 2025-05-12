@@ -1,5 +1,5 @@
 package platform
 
-type ShortcutCreator interface {
+type ShortcutsMgr interface {
 	Create(id, command, binding string) error
 }

@@ -9,20 +9,20 @@ import (
 )
 
 type installer struct {
-	actionRepo *actionRepo
-	logger     *slog.Logger
-	shortcuts  platform.ShortcutCreator
+	actionRepo   *actionRepo
+	logger       *slog.Logger
+	shortcutsMgr platform.ShortcutsMgr
 }
 
 func newInstaller(
 	logger *slog.Logger,
 	actionRepo *actionRepo,
-	shortcuts platform.ShortcutCreator,
+	shortcutsMgr platform.ShortcutsMgr,
 ) *installer {
 	return &installer{
-		logger:     logger,
-		actionRepo: actionRepo,
-		shortcuts:  shortcuts,
+		logger:       logger,
+		actionRepo:   actionRepo,
+		shortcutsMgr: shortcutsMgr,
 	}
 }
 
@@ -36,7 +36,7 @@ func (i *installer) Install() error {
 
 	for id, action := range actions {
 		command := fmt.Sprintf("%s --action %s", execPath, id)
-		if err := i.shortcuts.Create(id, command, action.Shortcut); err != nil {
+		if err := i.shortcutsMgr.Create(id, command, action.Shortcut); err != nil {
 			i.logger.Error("failed to set shortcut", "id", id, "err", err)
 			continue
 		}

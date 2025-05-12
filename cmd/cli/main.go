@@ -44,10 +44,10 @@ func main() {
 		gnome.NewDialog(),
 		gnome.NewNotifier(),
 		gnome.NewClipboard(),
+		gnome.NewShortcutsMgr(),
 		gnome.NewScreenshotter(),
 		gnome.NewVoiceRecorder(),
 		gnome.NewSelTextProvider(),
-		gnome.NewShortcutCreator(),
 	)
 
 	if err != nil {

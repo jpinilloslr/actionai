@@ -12,7 +12,7 @@
     "inputs": ["selected-text"],
     "output": "window",
     "shortcut": "<Super>t",
-    "instructions": "Translate this to English."
+    "instructions": "Traduce esto al Español, explica brevemente la estructura si es una frase. Cual es el genero si es un sustantivo."
   },
   "translate-screen-section": {
     "model": "gpt-4.1-mini",
