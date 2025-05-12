@@ -29,7 +29,7 @@ func (d *Dialog) Prompt() (string, error) {
 	return text, nil
 }
 
-func (d *Dialog) Show(text string) error {
+func (d *Dialog) ShowMultiline(text string) error {
 	cmd := exec.Command("zenity",
 		"--text-info",
 		"--title=Action AI",
@@ -40,7 +40,7 @@ func (d *Dialog) Show(text string) error {
 	return cmd.Run()
 }
 
-func (d *Dialog) ShowInfo(ctx context.Context, text string) error {
+func (d *Dialog) ShowCancellableDialog(ctx context.Context, text string) error {
 	cmd := exec.Command("zenity",
 		"--info",
 		"--title=Action AI",

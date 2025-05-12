@@ -58,7 +58,7 @@ func (s *Sender) setClipboard(value string) error {
 }
 
 func (s *Sender) setWindow(value string) error {
-	return s.dialog.Show(value)
+	return s.dialog.ShowMultiline(value)
 }
 
 func (s *Sender) setVoice(value string) error {
@@ -68,7 +68,7 @@ func (s *Sender) setVoice(value string) error {
 	errCh := make(chan error, 1)
 
 	go func() {
-		errCh <- s.dialog.ShowInfo(ctx, "Speaking...")
+		errCh <- s.dialog.ShowCancellableDialog(ctx, "Speaking...")
 	}()
 
 	go func() {
