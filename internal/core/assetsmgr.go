@@ -6,12 +6,12 @@ import (
 	"path/filepath"
 )
 
-type WorkDir struct {
-	dir string
+type AssetsMgr struct {
+	workdir string
 }
 
-func NewWorkDir() (*WorkDir, error) {
-	w := WorkDir{}
+func NewAssetsMgr() (*AssetsMgr, error) {
+	w := AssetsMgr{}
 
 	if err := w.init(); err != nil {
 		return nil, err
@@ -20,15 +20,19 @@ func NewWorkDir() (*WorkDir, error) {
 	return &w, nil
 }
 
-func (w *WorkDir) ActionsFile() string {
-	return filepath.Join(w.dir, actionsFile)
+func (w *AssetsMgr) ActionsFile() string {
+	return filepath.Join(w.workdir, actionsFile)
 }
 
-func (w *WorkDir) LogsFile() string {
-	return filepath.Join(w.dir, logsFile)
+func (w *AssetsMgr) LogsFile() string {
+	return filepath.Join(w.workdir, logsFile)
 }
 
-func (w *WorkDir) init() error {
+func (w *AssetsMgr) SoundFile() string {
+	return filepath.Join(w.workdir, soundFile)
+}
+
+func (w *AssetsMgr) init() error {
 	dir, err := os.UserConfigDir()
 	if err != nil {
 		return err
@@ -36,7 +40,7 @@ func (w *WorkDir) init() error {
 
 	dir = filepath.Join(dir, "actionai")
 
-	if w.isWorkDir(dir) {
+	if w.isAssetsMgr(dir) {
 		w.setDir(dir)
 		return nil
 	}
@@ -46,7 +50,7 @@ func (w *WorkDir) init() error {
 		return err
 	}
 
-	if w.isWorkDir(dir) {
+	if w.isAssetsMgr(dir) {
 		w.setDir(dir)
 		return nil
 	}
@@ -58,7 +62,7 @@ func (w *WorkDir) init() error {
 
 	dir = filepath.Dir(exeFile)
 
-	if w.isWorkDir(dir) {
+	if w.isAssetsMgr(dir) {
 		w.setDir(dir)
 		return nil
 	}
@@ -66,7 +70,7 @@ func (w *WorkDir) init() error {
 	return fmt.Errorf("could not resolve directory")
 }
 
-func (w *WorkDir) isWorkDir(dir string) bool {
+func (w *AssetsMgr) isAssetsMgr(dir string) bool {
 	testFile := filepath.Join(dir, actionsFile)
 	if _, err := os.Stat(testFile); err != nil {
 		return false
@@ -74,7 +78,7 @@ func (w *WorkDir) isWorkDir(dir string) bool {
 	return true
 }
 
-func (w *WorkDir) setDir(dir string) {
+func (w *AssetsMgr) setDir(dir string) {
 	fmt.Printf("Using directory %s\n", dir)
-	w.dir = dir
+	w.workdir = dir
 }

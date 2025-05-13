@@ -1,7 +1,10 @@
 package core
 
 import (
+	"context"
 	"log/slog"
+	"os"
+	"os/exec"
 
 	"github.com/jpinilloslr/actionai/internal/core/input"
 	"github.com/jpinilloslr/actionai/internal/core/output"
@@ -17,11 +20,12 @@ type AIModelRunner struct {
 	inReceiver  *input.Receiver
 	outSender   *output.Sender
 	notifier    platform.Notifier
+	assetsMgr   *AssetsMgr
 }
 
 func NewAIModelRunner(
 	logger *slog.Logger,
-	workDir *WorkDir,
+	assetsMgr *AssetsMgr,
 	aiModel AIModel,
 	voiceEngine VoiceEngine,
 	dialog platform.Dialog,
@@ -32,7 +36,7 @@ func NewAIModelRunner(
 	voiceRecorder platform.VoiceRecorder,
 	selTextProvider platform.SelTextProvider,
 ) (*AIModelRunner, error) {
-	cmdRepo, err := newActionRepo(logger, workDir.ActionsFile())
+	actionRepo, err := newActionRepo(logger, assetsMgr.ActionsFile())
 	if err != nil {
 		return nil, err
 	}
@@ -45,16 +49,17 @@ func NewAIModelRunner(
 		selTextProvider,
 	)
 	outSender := output.New(dialog, clipboard, voiceEngine.Speak)
-	installer := newInstaller(logger, cmdRepo, shortcutsMgr)
+	installer := newInstaller(logger, actionRepo, shortcutsMgr)
 
 	return &AIModelRunner{
 		logger:      logger,
 		aiModel:     aiModel,
-		actionRepo:  cmdRepo,
 		notifier:    notifier,
 		outSender:   outSender,
 		installer:   installer,
+		assetsMgr:   assetsMgr,
 		inReceiver:  inReceiver,
+		actionRepo:  actionRepo,
 		voiceEngine: voiceEngine,
 	}, nil
 }
@@ -93,7 +98,36 @@ func (r *AIModelRunner) Run(actionId string) error {
 	return r.outSender.Send(action.Output, resp)
 }
 
+func (r *AIModelRunner) playSound(ctx context.Context) error {
+	soundFile := r.assetsMgr.SoundFile()
+	if _, err := os.Stat(soundFile); err != nil {
+		return nil
+	}
+
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				r.logger.Info("Stopping sound playback")
+				return
+			default:
+				r.logger.Info("Playing sound", "file", soundFile)
+				cmd := exec.Command("aplay", soundFile)
+				if err := cmd.Run(); err != nil {
+					r.logger.Error("Error playing sound", "error", err)
+				}
+			}
+		}
+	}()
+
+	return nil
+}
+
 func (r *AIModelRunner) run(action *action, inputs []input.Input) (string, error) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	r.playSound(ctx)
 	r.processVoiceInput(inputs)
 	return r.aiModel.Run(action.Model, action.Instructions, inputs)
 }

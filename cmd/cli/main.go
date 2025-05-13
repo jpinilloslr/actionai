@@ -13,12 +13,12 @@ import (
 func main() {
 	actionId, install := getOptions()
 
-	workDir, err := core.NewWorkDir()
+	assetsMgr, err := core.NewAssetsMgr()
 	if err != nil {
 		fmt.Printf("Error resolving working directory: %v\n", err)
 	}
 
-	logger, err := core.NewLogger(workDir.LogsFile())
+	logger, err := core.NewLogger(assetsMgr.LogsFile())
 	if err != nil {
 		fmt.Printf("Error initializing logger: %v\n", err)
 		os.Exit(1)
@@ -38,7 +38,7 @@ func main() {
 
 	runner, err := core.NewAIModelRunner(
 		logger,
-		workDir,
+		assetsMgr,
 		model,
 		voiceEngine,
 		gnome.NewDialog(),
