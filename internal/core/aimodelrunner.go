@@ -3,8 +3,6 @@ package core
 import (
 	"context"
 	"log/slog"
-	"os"
-	"os/exec"
 
 	"github.com/jpinilloslr/actionai/internal/core/input"
 	"github.com/jpinilloslr/actionai/internal/core/output"
@@ -21,6 +19,7 @@ type AIModelRunner struct {
 	outSender   *output.Sender
 	notifier    platform.Notifier
 	assetsMgr   *AssetsMgr
+	audioPlayer platform.AudioPlayer
 }
 
 func NewAIModelRunner(
@@ -35,6 +34,7 @@ func NewAIModelRunner(
 	screenshotter platform.Screenshotter,
 	voiceRecorder platform.VoiceRecorder,
 	selTextProvider platform.SelTextProvider,
+	audioPlayer platform.AudioPlayer,
 ) (*AIModelRunner, error) {
 	actionRepo, err := newActionRepo(logger, assetsMgr.ActionsFile())
 	if err != nil {
@@ -61,6 +61,7 @@ func NewAIModelRunner(
 		inReceiver:  inReceiver,
 		actionRepo:  actionRepo,
 		voiceEngine: voiceEngine,
+		audioPlayer: audioPlayer,
 	}, nil
 }
 
@@ -98,36 +99,11 @@ func (r *AIModelRunner) Run(actionId string) error {
 	return r.outSender.Send(action.Output, resp)
 }
 
-func (r *AIModelRunner) playSound(ctx context.Context) error {
-	soundFile := r.assetsMgr.SoundFile()
-	if _, err := os.Stat(soundFile); err != nil {
-		return nil
-	}
-
-	go func() {
-		for {
-			select {
-			case <-ctx.Done():
-				r.logger.Info("Stopping sound playback")
-				return
-			default:
-				r.logger.Info("Playing sound", "file", soundFile)
-				cmd := exec.Command("aplay", soundFile)
-				if err := cmd.Run(); err != nil {
-					r.logger.Error("Error playing sound", "error", err)
-				}
-			}
-		}
-	}()
-
-	return nil
-}
-
 func (r *AIModelRunner) run(action *action, inputs []input.Input) (string, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	r.playSound(ctx)
+	r.audioPlayer.PlayLoop(ctx, r.assetsMgr.SoundFile())
 	r.processVoiceInput(inputs)
 	return r.aiModel.Run(action.Model, action.Instructions, inputs)
 }

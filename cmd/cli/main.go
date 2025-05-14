@@ -48,6 +48,7 @@ func main() {
 		gnome.NewScreenshotter(),
 		gnome.NewVoiceRecorder(),
 		gnome.NewSelTextProvider(),
+		gnome.NewAudioPlayer(),
 	)
 
 	if err != nil {
