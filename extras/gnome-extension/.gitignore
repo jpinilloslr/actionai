@@ -1,0 +1,4 @@
+node_modules/
+dist/
+actionai.zip
+schemas/*.compiled
