@@ -75,7 +75,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = runner.Run(actionId)
+	err = runner.RunFromActionRepo(actionId)
 	if err != nil {
 		logger.Error("Error running the model", "error", err)
 		os.Exit(1)

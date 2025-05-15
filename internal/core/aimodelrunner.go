@@ -61,12 +61,16 @@ func NewAIModelRunner(
 	}, nil
 }
 
-func (r *AIModelRunner) Run(actionId string) error {
+func (r *AIModelRunner) RunFromActionRepo(actionId string) error {
 	action, err := r.actionRepo.GetById(actionId)
 	if err != nil {
 		return err
 	}
 
+	return r.RunFromAction(action)
+}
+
+func (r *AIModelRunner) RunFromAction(action *action) error {
 	inputs, err := r.inReceiver.Receive(action.Inputs)
 	if err != nil {
 		return err
@@ -78,7 +82,7 @@ func (r *AIModelRunner) Run(actionId string) error {
 	}
 
 	if action.Notify {
-		err := r.notifier.Notify("Action AI", actionId+" completed.")
+		err := r.notifier.Notify("Action AI", "Action completed.")
 		if err != nil {
 			return err
 		}
@@ -86,7 +90,6 @@ func (r *AIModelRunner) Run(actionId string) error {
 
 	return r.outSender.Send(action.Output, resp)
 }
-
 func (r *AIModelRunner) run(action *action, inputs []input.Input) (string, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
