@@ -44,11 +44,10 @@ func main() {
 		gnome.NewDialog(),
 		gnome.NewNotifier(),
 		gnome.NewClipboard(),
-		gnome.NewShortcutsMgr(),
+		gnome.NewAudioPlayer(),
 		gnome.NewScreenshotter(),
 		gnome.NewVoiceRecorder(),
 		gnome.NewSelTextProvider(),
-		gnome.NewAudioPlayer(),
 	)
 
 	if err != nil {
@@ -57,7 +56,13 @@ func main() {
 	}
 
 	if install {
-		err := runner.InstallShortcuts()
+		installer, err := core.NewInstaller(logger, assetsMgr, gnome.NewShortcutsMgr())
+		if err != nil {
+			logger.Error("Error creating the installer", "error", err)
+			os.Exit(1)
+		}
+
+		err = installer.Install()
 		if err != nil {
 			logger.Error("Error installing shortcuts", "error", err)
 			os.Exit(1)

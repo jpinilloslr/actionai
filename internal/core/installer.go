@@ -8,25 +8,30 @@ import (
 	"github.com/jpinilloslr/actionai/internal/core/platform"
 )
 
-type installer struct {
+type Installer struct {
 	actionRepo   *actionRepo
 	logger       *slog.Logger
 	shortcutsMgr platform.ShortcutsMgr
 }
 
-func newInstaller(
+func NewInstaller(
 	logger *slog.Logger,
-	actionRepo *actionRepo,
+	assetsMgr *AssetsMgr,
 	shortcutsMgr platform.ShortcutsMgr,
-) *installer {
-	return &installer{
+) (*Installer, error) {
+	actionRepo, err := newActionRepo(logger, assetsMgr.ActionsFile())
+	if err != nil {
+		return nil, err
+	}
+
+	return &Installer{
 		logger:       logger,
 		actionRepo:   actionRepo,
 		shortcutsMgr: shortcutsMgr,
-	}
+	}, nil
 }
 
-func (i *installer) Install() error {
+func (i *Installer) Install() error {
 	execPath, err := os.Executable()
 	if err != nil {
 		return err

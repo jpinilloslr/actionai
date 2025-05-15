@@ -10,16 +10,15 @@ import (
 )
 
 type AIModelRunner struct {
-	aiModel     AIModel
-	voiceEngine VoiceEngine
-	logger      *slog.Logger
-	installer   *installer
 	actionRepo  *actionRepo
-	inReceiver  *input.Receiver
-	outSender   *output.Sender
-	notifier    platform.Notifier
+	aiModel     AIModel
 	assetsMgr   *AssetsMgr
 	audioPlayer platform.AudioPlayer
+	inReceiver  *input.Receiver
+	logger      *slog.Logger
+	notifier    platform.Notifier
+	outSender   *output.Sender
+	voiceEngine VoiceEngine
 }
 
 func NewAIModelRunner(
@@ -30,11 +29,10 @@ func NewAIModelRunner(
 	dialog platform.Dialog,
 	notifier platform.Notifier,
 	clipboard platform.Clipboard,
-	shortcutsMgr platform.ShortcutsMgr,
+	audioPlayer platform.AudioPlayer,
 	screenshotter platform.Screenshotter,
 	voiceRecorder platform.VoiceRecorder,
 	selTextProvider platform.SelTextProvider,
-	audioPlayer platform.AudioPlayer,
 ) (*AIModelRunner, error) {
 	actionRepo, err := newActionRepo(logger, assetsMgr.ActionsFile())
 	if err != nil {
@@ -49,28 +47,18 @@ func NewAIModelRunner(
 		selTextProvider,
 	)
 	outSender := output.New(dialog, clipboard, voiceEngine.Speak)
-	installer := newInstaller(logger, actionRepo, shortcutsMgr)
 
 	return &AIModelRunner{
-		logger:      logger,
+		actionRepo:  actionRepo,
 		aiModel:     aiModel,
+		assetsMgr:   assetsMgr,
+		audioPlayer: audioPlayer,
+		inReceiver:  inReceiver,
+		logger:      logger,
 		notifier:    notifier,
 		outSender:   outSender,
-		installer:   installer,
-		assetsMgr:   assetsMgr,
-		inReceiver:  inReceiver,
-		actionRepo:  actionRepo,
 		voiceEngine: voiceEngine,
-		audioPlayer: audioPlayer,
 	}, nil
-}
-
-func (r *AIModelRunner) InstallShortcuts() error {
-	if err := r.installer.Install(); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func (r *AIModelRunner) Run(actionId string) error {
