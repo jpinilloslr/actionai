@@ -1,6 +1,7 @@
 package input
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/jpinilloslr/actionai/internal/core/platform"
@@ -30,15 +31,20 @@ func New(
 	}
 }
 
-func (r *Receiver) Receive(types []Type) ([]Input, error) {
+func (r *Receiver) Receive(ctx context.Context, types []Type) ([]Input, error) {
 	result := []Input{}
 
 	for _, inType := range types {
-		in, err := r.process(inType)
-		if err != nil {
-			return nil, err
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		default:
+			in, err := r.process(inType)
+			if err != nil {
+				return nil, err
+			}
+			result = append(result, *in)
 		}
-		result = append(result, *in)
 	}
 
 	return result, nil

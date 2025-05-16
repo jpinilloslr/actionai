@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
@@ -75,7 +76,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = runner.RunFromActionRepo(actionId)
+	err = runner.RunFromActionRepo(context.Background(), actionId)
 	if err != nil {
 		logger.Error("Error running the model", "error", err)
 		os.Exit(1)

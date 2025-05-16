@@ -61,22 +61,26 @@ func NewActionRunner(
 	}, nil
 }
 
-func (r *ActionRunner) RunFromActionRepo(actionId string) error {
+func (r *ActionRunner) RunFromActionRepo(ctx context.Context, actionId string) error {
 	action, err := r.actionRepo.GetById(actionId)
 	if err != nil {
 		return err
 	}
 
-	return r.RunFromAction(action)
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+
+	return r.RunFromAction(ctx, action)
 }
 
-func (r *ActionRunner) RunFromAction(action *action) error {
-	inputs, err := r.inReceiver.Receive(action.Inputs)
+func (r *ActionRunner) RunFromAction(ctx context.Context, action *action) error {
+	inputs, err := r.inReceiver.Receive(ctx, action.Inputs)
 	if err != nil {
 		return err
 	}
 
-	resp, err := r.run(action, inputs)
+	resp, err := r.run(ctx, action, inputs)
 	if err != nil {
 		return err
 	}
@@ -90,11 +94,12 @@ func (r *ActionRunner) RunFromAction(action *action) error {
 
 	return r.outSender.Send(action.Output, resp)
 }
-func (r *ActionRunner) run(action *action, inputs []input.Input) (string, error) {
-	ctx, cancel := context.WithCancel(context.Background())
+
+func (r *ActionRunner) run(ctx context.Context, action *action, inputs []input.Input) (string, error) {
+	soundCtx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	r.audioPlayer.PlayLoop(ctx, r.assetsMgr.SoundFile())
+	r.audioPlayer.PlayLoop(soundCtx, r.assetsMgr.SoundFile())
 	r.processVoiceInput(inputs)
 	return r.aiModel.Run(action.Model, action.Instructions, inputs)
 }
