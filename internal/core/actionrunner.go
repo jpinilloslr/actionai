@@ -9,7 +9,7 @@ import (
 	"github.com/jpinilloslr/actionai/internal/core/platform"
 )
 
-type AIModelRunner struct {
+type ActionRunner struct {
 	actionRepo  *actionRepo
 	aiModel     AIModel
 	assetsMgr   *AssetsMgr
@@ -21,7 +21,7 @@ type AIModelRunner struct {
 	voiceEngine VoiceEngine
 }
 
-func NewAIModelRunner(
+func NewActionRunner(
 	logger *slog.Logger,
 	assetsMgr *AssetsMgr,
 	aiModel AIModel,
@@ -33,7 +33,7 @@ func NewAIModelRunner(
 	screenshotter platform.Screenshotter,
 	voiceRecorder platform.VoiceRecorder,
 	selTextProvider platform.SelTextProvider,
-) (*AIModelRunner, error) {
+) (*ActionRunner, error) {
 	actionRepo, err := newActionRepo(logger, assetsMgr.ActionsFile())
 	if err != nil {
 		return nil, err
@@ -48,7 +48,7 @@ func NewAIModelRunner(
 	)
 	outSender := output.New(dialog, clipboard, voiceEngine.Speak)
 
-	return &AIModelRunner{
+	return &ActionRunner{
 		actionRepo:  actionRepo,
 		aiModel:     aiModel,
 		assetsMgr:   assetsMgr,
@@ -61,7 +61,7 @@ func NewAIModelRunner(
 	}, nil
 }
 
-func (r *AIModelRunner) RunFromActionRepo(actionId string) error {
+func (r *ActionRunner) RunFromActionRepo(actionId string) error {
 	action, err := r.actionRepo.GetById(actionId)
 	if err != nil {
 		return err
@@ -70,7 +70,7 @@ func (r *AIModelRunner) RunFromActionRepo(actionId string) error {
 	return r.RunFromAction(action)
 }
 
-func (r *AIModelRunner) RunFromAction(action *action) error {
+func (r *ActionRunner) RunFromAction(action *action) error {
 	inputs, err := r.inReceiver.Receive(action.Inputs)
 	if err != nil {
 		return err
@@ -90,7 +90,7 @@ func (r *AIModelRunner) RunFromAction(action *action) error {
 
 	return r.outSender.Send(action.Output, resp)
 }
-func (r *AIModelRunner) run(action *action, inputs []input.Input) (string, error) {
+func (r *ActionRunner) run(action *action, inputs []input.Input) (string, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -99,7 +99,7 @@ func (r *AIModelRunner) run(action *action, inputs []input.Input) (string, error
 	return r.aiModel.Run(action.Model, action.Instructions, inputs)
 }
 
-func (r *AIModelRunner) processVoiceInput(inputs []input.Input) error {
+func (r *ActionRunner) processVoiceInput(inputs []input.Input) error {
 	for i := range inputs {
 		if inputs[i].VoiceFileName != nil {
 			text, err := r.voiceEngine.Transcribe(*inputs[i].VoiceFileName)

@@ -36,7 +36,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	runner, err := core.NewAIModelRunner(
+	runner, err := core.NewActionRunner(
 		logger,
 		assetsMgr,
 		model,
