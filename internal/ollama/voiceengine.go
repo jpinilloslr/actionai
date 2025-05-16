@@ -28,7 +28,7 @@ func (m *VoiceEngine) init() error {
 	return fmt.Errorf("not implemented yet")
 }
 
-func (m *VoiceEngine) Transcribe(audioFile string) (string, error) {
+func (m *VoiceEngine) Transcribe(ctx context.Context, audioFile string) (string, error) {
 	return "", fmt.Errorf("not implemented yet")
 }
 

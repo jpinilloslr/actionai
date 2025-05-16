@@ -41,11 +41,10 @@ func (m *VoiceEngine) init() error {
 	return nil
 }
 
-func (m *VoiceEngine) Transcribe(audioFile string) (string, error) {
+func (m *VoiceEngine) Transcribe(ctx context.Context, audioFile string) (string, error) {
 	client := openai.NewClient(
 		option.WithAPIKey(m.apiKey),
 	)
-	ctx := context.Background()
 
 	file, err := os.Open(audioFile)
 	if err != nil {

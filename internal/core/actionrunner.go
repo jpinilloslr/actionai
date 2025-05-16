@@ -100,14 +100,14 @@ func (r *ActionRunner) run(ctx context.Context, action *action, inputs []input.I
 	defer cancel()
 
 	r.audioPlayer.PlayLoop(soundCtx, r.assetsMgr.SoundFile())
-	r.processVoiceInput(inputs)
+	r.processVoiceInput(ctx, inputs)
 	return r.aiModel.Run(action.Model, action.Instructions, inputs)
 }
 
-func (r *ActionRunner) processVoiceInput(inputs []input.Input) error {
+func (r *ActionRunner) processVoiceInput(ctx context.Context, inputs []input.Input) error {
 	for i := range inputs {
 		if inputs[i].VoiceFileName != nil {
-			text, err := r.voiceEngine.Transcribe(*inputs[i].VoiceFileName)
+			text, err := r.voiceEngine.Transcribe(ctx, *inputs[i].VoiceFileName)
 			if err != nil {
 				return err
 			}
