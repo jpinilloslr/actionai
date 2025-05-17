@@ -1,5 +1,5 @@
 BINARY   := actionai
-CMD_PATH := ./cmd/cli
+CMD_PATH := ./cmd/actionai
 GNOME_EXT_UUID := actionai@jpinillos.dev
 GNOME_EXT_SRC := ./extras/gnome-extension/
 GNOME_EXT_DIST := ./extras/gnome-extension/dist/
