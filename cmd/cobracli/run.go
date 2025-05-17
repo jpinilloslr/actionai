@@ -1,10 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"slices"
 	"strings"
 
+	"github.com/jpinilloslr/actionai/internal/core"
+	"github.com/jpinilloslr/actionai/internal/gnome"
+	"github.com/jpinilloslr/actionai/internal/openai"
 	"github.com/spf13/cobra"
 )
 
@@ -35,23 +38,28 @@ var runCmd = &cobra.Command{
 	Short: "Run an action",
 	Long:  "Run an action",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		for _, input := range inputs {
-			if !slices.Contains(validInputs, input) {
-				return fmt.Errorf("invalid input: %s", input)
-			}
+		parsedInputs, err := core.ParseInputList(inputs)
+		if err != nil {
+			return err
 		}
 
-		if !slices.Contains(validOutputs, output) {
-			return fmt.Errorf("invalid output: %s", output)
+		parsedOutput, err := core.ParseOutput(output)
+		if err != nil {
+			return err
 		}
 
-		fmt.Println("Running with:")
-		fmt.Println("Inputs:", inputs)
-		fmt.Println("Output:", output)
-		fmt.Println("Instructions:", instructions)
-		fmt.Println("Model:", model)
+		action := core.Action{
+			Model:        model,
+			Inputs:       parsedInputs,
+			Output:       parsedOutput,
+			Instructions: instructions,
+		}
+		fmt.Printf(
+			"Running action: %v\n",
+			action,
+		)
 
-		return nil
+		return runAction(&action)
 	},
 }
 
@@ -77,4 +85,51 @@ func init() {
 
 	runCmd.MarkFlagRequired("input")
 	runCmd.MarkFlagRequired("output")
+}
+
+func runAction(action *core.Action) error {
+	assetsMgr, err := core.NewAssetsMgr()
+	if err != nil {
+		return fmt.Errorf("Error resolving working directory: %v", err)
+	}
+
+	logger, err := core.NewLogger(assetsMgr.LogsFile())
+	if err != nil {
+		return fmt.Errorf("Error initializing logger: %v", err)
+	}
+
+	model, err := openai.NewAIModel(logger)
+	if err != nil {
+		return fmt.Errorf("Error initializing model: %v", err)
+	}
+
+	voiceEngine, err := openai.NewVoiceEngine(logger)
+	if err != nil {
+		return fmt.Errorf("Error initializing voice engine: %v", err)
+	}
+
+	runner, err := core.NewActionRunner(
+		logger,
+		assetsMgr,
+		model,
+		voiceEngine,
+		gnome.NewDialog(),
+		gnome.NewNotifier(),
+		gnome.NewClipboard(),
+		gnome.NewAudioPlayer(),
+		gnome.NewScreenshotter(),
+		gnome.NewVoiceRecorder(),
+		gnome.NewSelTextProvider(),
+	)
+
+	if err != nil {
+		return fmt.Errorf("Error creating the model runner: %v", err)
+	}
+
+	err = runner.RunFromAction(context.Background(), action)
+	if err != nil {
+		return fmt.Errorf("Error running the model: %v", err)
+	}
+
+	return nil
 }
