@@ -8,7 +8,7 @@ import (
 )
 
 type actionRepo struct {
-	data        map[string]action
+	data        map[string]Action
 	logger      *slog.Logger
 	actionsFile string
 }
@@ -17,7 +17,7 @@ func newActionRepo(logger *slog.Logger, actionsFile string) (*actionRepo, error)
 	r := actionRepo{
 		logger:      logger,
 		actionsFile: actionsFile,
-		data:        make(map[string]action),
+		data:        make(map[string]Action),
 	}
 
 	if err := r.load(); err != nil {
@@ -27,11 +27,11 @@ func newActionRepo(logger *slog.Logger, actionsFile string) (*actionRepo, error)
 	return &r, nil
 }
 
-func (r *actionRepo) GetAll() map[string]action {
+func (r *actionRepo) GetAll() map[string]Action {
 	return r.data
 }
 
-func (r *actionRepo) GetById(id string) (*action, error) {
+func (r *actionRepo) GetById(id string) (*Action, error) {
 	if action, ok := r.data[id]; ok {
 		return &action, nil
 	}
@@ -47,7 +47,7 @@ func (r *actionRepo) load() error {
 		return err
 	}
 
-	var actions map[string]action
+	var actions map[string]Action
 	err = json.Unmarshal(file, &actions)
 	if err != nil {
 		return err

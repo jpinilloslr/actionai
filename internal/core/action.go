@@ -5,7 +5,7 @@ import (
 	"github.com/jpinilloslr/actionai/internal/core/output"
 )
 
-type action struct {
+type Action struct {
 	Model        string
 	Inputs       []input.Type
 	Output       output.Type

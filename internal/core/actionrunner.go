@@ -74,7 +74,7 @@ func (r *ActionRunner) RunFromActionRepo(ctx context.Context, actionId string) e
 	return r.RunFromAction(ctx, action)
 }
 
-func (r *ActionRunner) RunFromAction(ctx context.Context, action *action) error {
+func (r *ActionRunner) RunFromAction(ctx context.Context, action *Action) error {
 	inputs, err := r.inReceiver.Receive(ctx, action.Inputs)
 	if err != nil {
 		return err
@@ -95,7 +95,7 @@ func (r *ActionRunner) RunFromAction(ctx context.Context, action *action) error 
 	return r.outSender.Send(action.Output, resp)
 }
 
-func (r *ActionRunner) run(ctx context.Context, action *action, inputs []input.Input) (string, error) {
+func (r *ActionRunner) run(ctx context.Context, action *Action, inputs []input.Input) (string, error) {
 	soundCtx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
