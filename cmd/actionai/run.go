@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/jpinilloslr/actionai/internal/core"
@@ -88,14 +89,10 @@ func init() {
 }
 
 func runAction(action *core.Action) error {
+	logger := slog.Default()
 	assetsMgr, err := core.NewAssetsMgr()
 	if err != nil {
 		return fmt.Errorf("Error resolving working directory: %v", err)
-	}
-
-	logger, err := core.NewLogger(assetsMgr.LogsFile())
-	if err != nil {
-		return fmt.Errorf("Error initializing logger: %v", err)
 	}
 
 	model, err := openai.NewAIModel(logger)

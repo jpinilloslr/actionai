@@ -31,7 +31,7 @@ func NewVoiceEngine(logger *slog.Logger) (core.VoiceEngine, error) {
 }
 
 func (m *VoiceEngine) init() error {
-	m.logger.Info("Initializing OpenAI model")
+	m.logger.Info("Initializing OpenAI model for voice engine")
 	key, ok := os.LookupEnv("OPENAI_API_KEY")
 	if !ok {
 		return fmt.Errorf("OPENAI_API_KEY not set")

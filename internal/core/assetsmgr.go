@@ -20,10 +20,6 @@ func NewAssetsMgr() (*AssetsMgr, error) {
 	return &w, nil
 }
 
-func (w *AssetsMgr) LogsFile() string {
-	return filepath.Join(w.workdir, logsFile)
-}
-
 func (w *AssetsMgr) SoundFile() string {
 	return filepath.Join(w.workdir, soundFile)
 }

@@ -29,7 +29,7 @@ func NewAIModel(logger *slog.Logger) (core.AIModel, error) {
 }
 
 func (m *AIModel) init() error {
-	m.logger.Info("Initializing OpenAI model")
+	m.logger.Info("Initializing OpenAI model for content generation")
 	key, ok := os.LookupEnv("OPENAI_API_KEY")
 	if !ok {
 		return fmt.Errorf("OPENAI_API_KEY not set")
