@@ -1,7 +1,0 @@
-{
-  "name": "Action AI",
-  "description": "Support for AI actions",
-  "uuid": "actionai@jpinillos.dev",
-  "settings-schema": "org.gnome.shell.extensions.actionai",
-  "shell-version": ["48"]
-}
