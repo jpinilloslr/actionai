@@ -10,7 +10,6 @@ import (
 )
 
 type ActionRunner struct {
-	actionRepo  *actionRepo
 	aiModel     AIModel
 	assetsMgr   *AssetsMgr
 	audioPlayer platform.AudioPlayer
@@ -34,11 +33,6 @@ func NewActionRunner(
 	voiceRecorder platform.VoiceRecorder,
 	selTextProvider platform.SelTextProvider,
 ) (*ActionRunner, error) {
-	actionRepo, err := newActionRepo(logger, assetsMgr.ActionsFile())
-	if err != nil {
-		return nil, err
-	}
-
 	inReceiver := input.New(
 		dialog,
 		clipboard,
@@ -49,7 +43,6 @@ func NewActionRunner(
 	outSender := output.New(dialog, clipboard, voiceEngine.Speak)
 
 	return &ActionRunner{
-		actionRepo:  actionRepo,
 		aiModel:     aiModel,
 		assetsMgr:   assetsMgr,
 		audioPlayer: audioPlayer,
@@ -59,19 +52,6 @@ func NewActionRunner(
 		outSender:   outSender,
 		voiceEngine: voiceEngine,
 	}, nil
-}
-
-func (r *ActionRunner) RunFromActionRepo(ctx context.Context, actionId string) error {
-	action, err := r.actionRepo.GetById(actionId)
-	if err != nil {
-		return err
-	}
-
-	if err := ctx.Err(); err != nil {
-		return err
-	}
-
-	return r.RunFromAction(ctx, action)
 }
 
 func (r *ActionRunner) RunFromAction(ctx context.Context, action *Action) error {
