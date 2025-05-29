@@ -1,0 +1,28 @@
+# You can use https://github.com/jpinilloslr/gshortcuts
+# to import declarative shortcuts into GNOME Shell
+#
+custom:
+  - id: correct-selected-text
+    name: Correct selected text
+    binding: <Super>c
+    command: actionai run -m gpt-4.1-mini -i selected-text -o clipboard -n "Correct this text. Reply only the corrected text. Keep the same style."
+
+  - id: translate-text
+    name: Translate text
+    binding: <Super>t
+    command: actionai run -m gpt-4.1-mini -i selected-text -o window -n "Translate this to English"
+
+  - id: translate-screen-section
+    name: Translate screen section
+    binding: <Super><Shift>t
+    command: actionai run -m gpt-4.1-mini -i screen-section -o window -n "Translate this to English"
+
+  - id: ask-screen-section-with-voice
+    name: Ask screen section with voice
+    binding: <Super><Shift>a
+    command: actionai run -m gpt-4.1-mini -i screen-section,voice -o window
+
+  - id: ask-with-voice
+    name: Ask with voice
+    binding: <Super><Control>v
+    command: actionai run -m gpt-4.1-mini -i voice -o voice
